@@ -63,6 +63,7 @@ abstract class TestEvent {
 object TestEvent {
   def apply(events: Seq[TEvent]): TestEvent =
     new TestEvent {
+      println("senu: SBT TestEvent.apply", events)
       val result = Some(overallResult(events))
       override val detail = events
     }

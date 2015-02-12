@@ -57,17 +57,21 @@ final class TestDefinition(val name: String, val fingerprint: Fingerprint, val e
 
 final class TestRunner(delegate: Runner, listeners: Seq[TestReportListener], log: Logger) {
 
-  final def tasks(testDefs: Set[TestDefinition]): Array[TestTask] =
+  final def tasks(testDefs: Set[TestDefinition]): Array[TestTask] = {
+    println("senu: SBT Runner.tasks %s".format(testDefs map (_.name)))
     delegate.tasks(testDefs.map(df => new TaskDef(df.name, df.fingerprint, df.explicitlySpecified, df.selectors)).toArray)
+  }
 
   final def run(taskDef: TaskDef, testTask: TestTask): (SuiteResult, Seq[TestTask]) =
     {
+      println("senu: SBT Runner.run; taskDef=%s".format(taskDef))
       val testDefinition = new TestDefinition(taskDef.fullyQualifiedName, taskDef.fingerprint, taskDef.explicitlySpecified, taskDef.selectors)
       log.debug("Running " + taskDef)
       val name = testDefinition.name
 
       def runTest() =
         {
+          println("senu: SBT Runner.runTest. taskDef=%s, testTask=%s".format(taskDef, testTask))
           // here we get the results! here is where we'd pass in the event listener
           val results = new scala.collection.mutable.ListBuffer[Event]
           val handler = new EventHandler { def handle(e: Event) { results += e } }
@@ -131,6 +135,7 @@ object TestFramework {
     log: Logger,
     listeners: Seq[TestReportListener]): (() => Unit, Seq[(String, TestFunction)], TestResult.Value => () => Unit) =
     {
+      println("senu: SBT TestFramework.testTasks")
       val mappedTests = testMap(frameworks.values.toSeq, tests)
       if (mappedTests.isEmpty)
         (() => (), Nil, _ => () => ())
@@ -204,7 +209,10 @@ object TestFramework {
 
 abstract class TestFunction(val taskDef: TaskDef, val runner: TestRunner, fun: (TestRunner) => (SuiteResult, Seq[TestTask])) {
 
-  def apply(): (SuiteResult, Seq[TestTask]) = fun(runner)
+  def apply(): (SuiteResult, Seq[TestTask]) = {
+    println("senu: SBT TestFunction.apply")
+    fun(runner)
+  }
 
   def tags: Seq[String]
 }

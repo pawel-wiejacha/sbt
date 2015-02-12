@@ -527,6 +527,7 @@ object Defaults extends BuildCommon {
   }
 
   def allTestGroupsTask(s: TaskStreams, frameworks: Map[TestFramework, Framework], loader: ClassLoader, groups: Seq[Tests.Group], config: Tests.Execution, cp: Classpath, javaHome: Option[File], forkedParallelExecution: Boolean): Task[Tests.Output] = {
+    println("senu: SBT main: Defaults.allTestGroupsTask: groups=%s".format(groups))
     val runners = createTestRunners(frameworks, loader, config)
     val groupTasks = groups map {
       case Tests.Group(name, tests, runPolicy) =>
@@ -539,6 +540,7 @@ object Defaults extends BuildCommon {
             Tests(frameworks, loader, runners, tests, config, s.log)
         }
     }
+    println("senu: SBT main: defaults.allTestGroupsTask: groupTasks=%s".format(groupTasks))
     val output = Tests.foldTasks(groupTasks, config.parallel)
     output map { out =>
       val summaries =

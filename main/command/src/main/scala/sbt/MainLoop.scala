@@ -3,6 +3,8 @@
  */
 package sbt
 
+import sun.misc.Signal
+
 import scala.annotation.tailrec
 import java.io.{ File, PrintWriter }
 import jline.TerminalFactory
@@ -20,6 +22,11 @@ object MainLoop {
     })
 
     try {
+      sun.misc.Signal.handle(new Signal("INT"), new sun.misc.SignalHandler() {
+        def handle(sig: Signal): Unit = {
+          println("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO got SIGINT. what to do next? v3")
+        }
+      })
       Runtime.getRuntime.addShutdownHook(shutdownHook)
       runLoggedLoop(state, state.globalLogging.backing)
     } finally {

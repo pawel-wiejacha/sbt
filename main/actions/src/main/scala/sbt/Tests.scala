@@ -166,10 +166,12 @@ object Tests {
       testTask(testLoader, frameworks, runners, o.tests, o.setup, o.cleanup, log, o.testListeners, config)
     }
 
-  def testTask(loader: ClassLoader, frameworks: Map[TestFramework, Framework], runners: Map[TestFramework, Runner], tests: Seq[TestDefinition],
+  def testTask(loader: ClassLoader, frameworks: Map[TestFramework, Framework], runners: Map[TestFramework, Runner],
+    tests: Seq[TestDefinition],
     userSetup: Iterable[ClassLoader => Unit], userCleanup: Iterable[ClassLoader => Unit],
     log: Logger, testListeners: Seq[TestReportListener], config: Execution): Task[Output] =
     {
+      println("senu: SBT actions:Tests.testTask, tests: %s".format(tests))
       def fj(actions: Iterable[() => Unit]): Task[Unit] = nop.dependsOn(actions.toSeq.fork(_()): _*)
       def partApp(actions: Iterable[ClassLoader => Unit]) = actions.toSeq map { a => () => a(loader) }
 
@@ -236,12 +238,14 @@ object Tests {
         runnableList match {
           case hd :: rst =>
             val testFun = hd._2
+            println("senu: SBT actions:Tests.makeSerial.processRunnable. string=%s, testFun: %s".format(hd._1, testFun))
             val (result, nestedTasks) = testFun.apply()
             val nestedRunnables = createNestedRunnables(loader, testFun, nestedTasks)
             processRunnable(nestedRunnables.toList ::: rst, (hd._1, result) :: acc)
           case Nil => acc
         }
 
+      println("senu: SBT actions:Tests.makeSerial. runnables: %s".format(runnables))
       task { processRunnable(runnables.toList, List.empty) } dependsOn (setupTasks)
     }
 
