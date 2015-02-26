@@ -136,6 +136,10 @@ object TestFramework {
     listeners: Seq[TestReportListener]): (() => Unit, Seq[(String, TestFunction)], TestResult.Value => () => Unit) =
     {
       println("senu: SBT TestFramework.testTasks")
+      //import InterruptHandlerHolder
+      InterruptHandlerHolder.handler = () => {
+        CurrentlyRunning.list
+      }
       val mappedTests = testMap(frameworks.values.toSeq, tests)
       if (mappedTests.isEmpty)
         (() => (), Nil, _ => () => ())
@@ -211,8 +215,28 @@ abstract class TestFunction(val taskDef: TaskDef, val runner: TestRunner, fun: (
 
   def apply(): (SuiteResult, Seq[TestTask]) = {
     println("senu: SBT TestFunction.apply")
-    fun(runner)
+    CurrentlyRunning.add(this)
+    CurrentlyRunning.list
+    try {
+      fun(runner)
+    } finally {
+      CurrentlyRunning.remove(this)
+    }
   }
 
   def tags: Seq[String]
+}
+
+object CurrentlyRunning {
+
+  private var tasks: Set[TestFunction] = Set()
+
+  def add(fun: TestFunction) = this.synchronized { tasks += fun }
+
+  def list: Set[TestFunction] = this.synchronized {
+    println("Currently running: " + tasks.map(_.taskDef).mkString(", "))
+    tasks
+  }
+
+  def remove(fun: TestFunction) = this.synchronized { tasks -= fun }
 }

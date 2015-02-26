@@ -24,7 +24,8 @@ object MainLoop {
     try {
       sun.misc.Signal.handle(new Signal("INT"), new sun.misc.SignalHandler() {
         def handle(sig: Signal): Unit = {
-          println("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO got SIGINT. what to do next? v3")
+          println("HELLOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO got SIGINT. what to do next? v4")
+          InterruptHandlerHolder.handler()
         }
       })
       Runtime.getRuntime.addShutdownHook(shutdownHook)
