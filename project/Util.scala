@@ -186,7 +186,7 @@ object Common {
   lazy val jawnParser = lib("org.spire-math" %% "jawn-parser" % "0.6.0")
   lazy val jawnJson4s = lib("org.spire-math" %% "json4s-support" % "0.6.0")
   lazy val scalaCompiler = libraryDependencies <+= scalaVersion(sv => "org.scala-lang" % "scala-compiler" % sv)
-  lazy val testInterface = lib("org.scala-sbt" % "test-interface" % "1.0")
+  lazy val testInterface = lib("org.scala-sbt" % "test-interface" % "1.1-SNAPSHOT")
   private def scala211Module(name: String, moduleVersion: String) =
     libraryDependencies <++= (scalaVersion)(scalaVersion =>
       if (scalaVersion.startsWith("2.11.") || scalaVersion.startsWith("2.12.")) ("org.scala-lang.modules" %% name % moduleVersion) :: Nil
